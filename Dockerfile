@@ -35,13 +35,15 @@ RUN service mongod start
 EXPOSE 27017
 
 #Downloading Tomcat 7 tar file to /opt/
-ADD http://www-us.apache.org/dist/tomcat/tomcat-7/v7.0.82/bin/apache-tomcat-7.0.82-deployer.tar.gz /opt/
-RUN tar -zxvf /opt/apache-tomcat-8.0.33.tar.gz -C /opt/tomcat --strip-components=1 && rm -rf apache-tomcat-8.0.33.tar.gz
+ARG TOMCAT_MAJOR=v7.0.82
+ARG TOMCAT_MINOR=7.0.82
+ADD http://www-us.apache.org/dist/tomcat/tomcat-7/${TOMCAT_MAJOR}/bin/apache-tomcat-${TOMCAT_MINOR}.tar.gz /opt/
+RUN mkdir tomcat7 && tar -xzf /opt/apache-tomcat-${TOMCAT_MINOR}.tar.gz -C /opt/tomcat7  && rm -rf apache-tomcat-${TOMCAT_MINOR}.tar.gz
 
 #Startting the tomcat server
-RUN ./opt/apache-tomcat-7.0.82/bin/startup.sh
+RUN sh /opt/tomcat7/apache-tomcat-${TOMCAT_MINOR}/bin/startup.sh
 #Expose the port 8080
 EXPOSE 8080
 
 #To maintin the container in running state
-CMD ["/bin/bash"]
+CMD ["/opt/tomcat7/apache-tomcat-7.0.82/bin/catalina.sh"]
