@@ -18,7 +18,7 @@ ENV PATH PATH=$PATH:/opt/jdk1.8.0_151/bin
 #Installing JAVA 
 
 COPY Scrpt.sh /opt/
-RUN sh /opt/Scrpt.sh && rm -rf jdk-8u151-linux-x64.tar.gz
+RUN sh /opt/Scrpt.sh && rm -rf jdk-8u151-linux-x64.tar.gz 
 
 #Createing the repo file and copying the MongoDB Repository to it
 RUN touch /etc/yum.repos.d/mongodb.repo
@@ -45,5 +45,11 @@ RUN sh /opt/tomcat7/apache-tomcat-${TOMCAT_MINOR}/bin/startup.sh
 #Expose the port 8080
 EXPOSE 8080
 
-#To maintin the container in running state
-CMD ["/opt/tomcat7/apache-tomcat-7.0.82/bin/catalina.sh"]
+#Making Tomcat as a Service for this purpose I have written a tomcat file in host and copied it into the runlevels
+COPY tomcat  /etc/init.d/tomcat
+RUN cd /etc/init.d/ && chmod 755 tomcat && chkconfig --add tomcat && chkconfig --level 234 tomcat on
+
+#ENTRYPOINT service tomcat start && bash
+
+#To maintin the container in running state and tomcat service to run
+CMD service tomcat start && bash
